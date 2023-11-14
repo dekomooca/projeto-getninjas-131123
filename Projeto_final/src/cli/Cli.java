@@ -5,11 +5,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
-
-import javax.swing.text.StyledEditorKit.ForegroundAction;
 
 import entidades.evento.Evento;
 import entidades.evento.Exposicao;
@@ -37,8 +34,8 @@ public class Cli {
             opcao = leitor.nextInt();
             switch (opcao) {
                 case 1:
-                    evento = cadastrarEvento(leitor);
-                    if(evento != null) {
+                    evento = cadastrarEvento();
+                    if(evento != null ) {
                     	System.out.println("Evento cadastrado com sucesso!");
                     }
                     break;
@@ -96,14 +93,14 @@ public class Cli {
     		return null;
     	}  else {
     		int i = 0;
-    		
+    		Scanner scn = new Scanner(System.in);
     		System.out.print("Informe o nome do evento: ");
-    		nomeEventoDigitado = leitor.next();
+    		nomeEventoDigitado = scn.nextLine();
     		
     		for (Evento evt : listarTdsEventos) {
     			if(evt.getNome().equalsIgnoreCase(nomeEventoDigitado)) {
     				System.out.print("Informe o tipo do ingresso (meia ou inteira): ");
-    		        tipo = leitor.next();
+    		        tipo = scn.next();
     		        if (!(tipo.equals("meia") || tipo.equals("inteira"))) {
     		            System.out.println("Tipo selecionado inválido!");
     		            return null;
@@ -112,7 +109,7 @@ public class Cli {
     		        tipoIngresso = tipo.equals("meia") ? TipoIngresso.MEIA : TipoIngresso.INTEIRA;
 
     		        System.out.print("Informe quantos ingressos você deseja: ");
-    		        quantidade = leitor.nextInt();
+    		        quantidade = scn.nextInt();
 
     		        if (!evento.isIngressoDisponivel(tipoIngresso, quantidade)) {
     		            System.out.println("Não há ingressos disponíveis desse tipo!");
@@ -123,13 +120,13 @@ public class Cli {
     		            int percentual;
 
     		            System.out.print("Informe o percentual do desconto de sócio torcedor: ");
-    		            percentual = leitor.nextInt();
+    		            percentual = scn.nextInt();
     		            ingresso = new IngJogo(evento, tipoIngresso, percentual);
     		        } else if (evento instanceof Show) {
     		            String localizacao;
 
     		            System.out.print("Informe a localização do ingresso (pista ou camarote): ");
-    		            localizacao = leitor.next();
+    		            localizacao = scn.next();
 
     		            if (!(localizacao.equals("pista") || localizacao.equals("camarote"))) {
     		                System.out.println("Localização inválida!");
@@ -140,7 +137,7 @@ public class Cli {
     		            String desconto;
 
     		            System.out.print("Informe se possui desconto social (s/n): ");
-    		            desconto = leitor.next();
+    		            desconto = scn.next();
 
     		            ingresso = new IngExposicao(evento, tipoIngresso, desconto.equals("s"));
     		        }
@@ -221,10 +218,12 @@ public class Cli {
     	if (listarTdsEventos.isEmpty()) {
     		System.out.print("Nenhum evento foi cadastrado no momento ! \n");
     	} else {
-    		String nomeEventoDigitado, localDigitado, dataDigitada;
+    		String nomeEventoDigitado = ""; 
+    		String localDigitado, dataDigitada;
     		boolean achou = false;
+    		Scanner scn = new Scanner(System.in);
     		System.out.print("Informe o nome do evento: ");
-    		nomeEventoDigitado = leitor.next();
+    		nomeEventoDigitado = scn.nextLine();
     		
     		int i = 0;
     		for (Evento evento : listarTdsEventos) {
@@ -241,7 +240,7 @@ public class Cli {
     						System.out.println(evento);
     						System.out.print("\n O evento digitado esta listado acima. \n");
     						System.out.print("Informe o novo valor do campo local: ");
-    			    		localDigitado = leitor.next();
+    			    		localDigitado = scn.nextLine();
     			    		System.out.print("Informe o novo valor do campo data: ");
     			    		dataDigitada = leitor.next();
     			    		DateTimeFormatter formatacao = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -249,13 +248,13 @@ public class Cli {
     			            	dataFinal = LocalDate.parse(dataDigitada, formatacao);
     			            	evento.setLocal(localDigitado);
     			            	evento.setDataFinal(dataFinal);
+    			            	System.out.print("\n Campos do evento atualizados com sucesso \n");
     			    		} catch (Exception e) {
     			    			System.out.println("Data no formato errado ! Tente novamente ! ");
     			    			System.out.println("----------------------------------------- \n ");
     			    			achou = true;
     			    			break;
     			    		}
-    						System.out.print("\n Campos do evento atualizados com sucesso \n");
     					} else if (buscaEvento == 3){
     						System.out.print("\n O evento digitado apresenta:");
     						System.out.print("\n Ingresso tipo Meia: " + evento.getIngressosMeia());
@@ -284,14 +283,19 @@ public class Cli {
 		return listarTdsEventos;
 	}
 
-	private static Evento cadastrarEvento(Scanner leitor) throws IOException {
-        String nome, data, local, tipo;
+	private static Evento cadastrarEvento() throws IOException {
+        String nome = ""; 
+        String local = "";
+        String data, tipo;
         LocalDate dataFinal = LocalDate.now();
         int ingMeia, ingInteira;
         double preco;
+        Scanner leitor = new Scanner(System.in);
         
         System.out.print("Informe o nome do evento: ");
-        nome = leitor.next();
+        nome = leitor.nextLine();
+        System.out.print("Informe o local do evento: ");
+        local = leitor.nextLine();
         System.out.print("Informe a data do evento: (dd/mm/yyyy) ");
         data = leitor.next();
         DateTimeFormatter formatacao = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -302,8 +306,6 @@ public class Cli {
 			System.out.println("----------------------------------------- \n ");
 			return null;
 		}
-        System.out.print("Informe o local do evento: ");
-        local = leitor.next();
         System.out.print("Informe o número de entradas tipo meia: ");
         ingMeia = leitor.nextInt();
         System.out.print("Informe o número de entradas tipo inteira: ");
