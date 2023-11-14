@@ -19,6 +19,7 @@ import entidades.ingresso.IngExposicao;
 import entidades.ingresso.IngJogo;
 import entidades.ingresso.IngShow;
 
+
 public class Cli {
     public static int executar() throws IOException {
         Evento evento = null;
@@ -27,7 +28,7 @@ public class Cli {
         int buscaEvento = 0;
         int opcao;
 
-        System.out.println("Seja bem-vindo ao programa de venda de ingressos de eventos!");
+        System.out.println("Seja bem-vindo ao programa de venda de ingressos de eventos !");
 
         while (true) {
             menu();
